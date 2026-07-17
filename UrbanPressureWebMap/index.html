@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bandaragama Urban Pressure Monitor</title>
+<link rel="icon" type="image/svg+xml" href="images/logo.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ===================== SIDEBAR RAIL ===================== -->
+<nav class="rail" aria-label="Primary">
+  <div class="rail-mark">
+    <img src="images/logo.svg" alt="" class="rail-mark-img">
+  </div>
+  <button class="rail-btn is-active" data-page="home" aria-current="page">
+    <span class="rail-ico">⌂</span><span class="rail-label">Home</span>
+  </button>
+  <button class="rail-btn" data-page="map">
+    <span class="rail-ico">⬡</span><span class="rail-label">Map</span>
+  </button>
+  <button class="rail-btn" data-page="dashboard">
+    <span class="rail-ico">▤</span><span class="rail-label">Dashboard</span>
+  </button>
+  <button class="rail-btn" data-page="report">
+    <span class="rail-ico">✎</span><span class="rail-label">Report</span>
+  </button>
+  <button class="rail-btn" data-page="about">
+    <span class="rail-ico">ℹ</span><span class="rail-label">About</span>
+  </button>
+  <div class="rail-foot">
+    <span class="rail-foot-dsd">Bandaragama&nbsp;DSD</span>
+  </div>
+</nav>
+
+<!-- ===================== HOME ===================== -->
+<main class="page is-active" id="page-home">
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Participatory Planning Support System</p>
+      <h1 class="hero-title">Bandaragama Urban<br>Pressure Monitor</h1>
+      <p class="hero-lede">
+        Tracking agricultural land under pressure from urban conversion across Bandaragama DSD, one 100&nbsp;m grid cell at a time.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" data-nav="map">Open the map</button>
+        <button class="btn btn-ghost" data-nav="report">Report a change</button>
+      </div>
+      <dl class="hero-stats" id="hero-stats">
+        <div class="hstat"><dt>Grid cells analysed</dt><dd id="hs-total">&mdash;</dd></div>
+        <div class="hstat"><dt>Under high pressure</dt><dd id="hs-high">&mdash;</dd></div>
+        <div class="hstat"><dt>Mean urban pressure index</dt><dd id="hs-upi">&mdash;</dd></div>
+      </dl>
+    </div>
+    <div class="hero-swatch" aria-hidden="true">
+      <div class="swatch-card">
+        <p class="swatch-label">Pressure sample &mdash; live composition</p>
+        <div class="swatch-grid" id="swatch-grid"></div>
+        <div class="swatch-legend">
+          <span><i class="dot dot-low"></i>Low</span>
+          <span><i class="dot dot-mod"></i>Moderate</span>
+          <span><i class="dot dot-high"></i>High</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-intro">
+    <p>This web map visualises urban conversion pressure on agricultural land using spatial analysis, and lets residents report land use changes they observe directly. It's built to support evidence collection through interactive mapping and public participation — not to prescribe planning decisions.</p>
+  </section>
+
+  <section class="info-cards">
+    <div class="info-card">
+      <h3>Study area</h3>
+      <p>Bandaragama DSD, Kalutara District, Western Province — a 100&nbsp;m analysis grid across 14,293 cells.</p>
+    </div>
+    <div class="info-card">
+      <h3>Data sources</h3>
+      <p>Satellite land cover classification, OpenStreetMap roads, GN Division boundaries, Google Earth Engine composites.</p>
+    </div>
+    <div class="info-card">
+      <h3>Analysis method</h3>
+      <p>A composite Urban Pressure Index from built-up growth, urban cover, and road proximity, scored per cell in QGIS.</p>
+    </div>
+    <div class="info-card">
+      <h3>Last updated</h3>
+      <p id="last-updated-text">—</p>
+    </div>
+  </section>
+
+  <section class="strip">
+    <div class="strip-item">
+      <span class="strip-num">01</span>
+      <h3>See the pressure</h3>
+      <p>Every cell is scored on built-up growth, agricultural cover, and road proximity to give a single Urban Pressure Index.</p>
+    </div>
+    <div class="strip-item">
+      <span class="strip-num">02</span>
+      <h3>Read the numbers</h3>
+      <p>A dashboard summarises how much land is agricultural, how much is converting, and where risk is concentrated.</p>
+    </div>
+    <div class="strip-item">
+      <span class="strip-num">03</span>
+      <h3>Tell us what you see</h3>
+      <p>Residents can flag a conversion in progress &mdash; a filled paddy, a new access road &mdash; straight from the map.</p>
+    </div>
+  </section>
+
+  <section class="workflow">
+    <p class="eyebrow">How the layer was built</p>
+    <div class="workflow-chain">
+      <div class="wf-step"><span>GEE</span><small>Satellite composites</small></div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step"><span>QGIS</span><small>UPI &amp; risk scoring</small></div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step"><span>GeoJSON</span><small>100 m grid export</small></div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step"><span>This map</span><small>Public participation</small></div>
+    </div>
+  </section>
+</main>
+
+<!-- ===================== MAP ===================== -->
+<main class="page" id="page-map">
+  <div class="map-shell">
+    <aside class="map-panel">
+      <div class="panel-block">
+        <label class="panel-title" for="search-input">Find a grid cell or place</label>
+        <div class="search-row" style="position:relative;">
+          <input id="search-input" type="text" placeholder="Grid ID or place name" autocomplete="off">
+          <button id="search-btn" class="btn btn-primary btn-sm">Go</button>
+          <div class="suggest-list" id="suggest-list"></div>
+        </div>
+        <p class="search-msg" id="search-msg"></p>
+        <p class="panel-hint">Know the Grid ID? Type it directly. Otherwise, start typing a GN Division name for suggestions, or a landmark/road name.</p>
+      </div>
+
+      <div class="panel-block">
+        <p class="panel-title">Colour by</p>
+        <div class="segmented" id="colour-mode">
+          <button class="seg-btn is-active" data-mode="Pressure">Urban Pressure</button>
+          <button class="seg-btn" data-mode="Con_Ris">Conversion Risk</button>
+        </div>
+      </div>
+
+      <div class="panel-block">
+        <p class="panel-title">Basemap</p>
+        <div class="segmented" id="basemap-mode">
+          <button class="seg-btn is-active" data-basemap="street">Street map</button>
+          <button class="seg-btn" data-basemap="satellite">Satellite</button>
+        </div>
+      </div>
+
+      <div class="panel-block">
+        <p class="panel-title">Layers</p>
+        <label class="check-row"><input type="checkbox" id="layer-grid" checked> Pressure grid</label>
+        <label class="check-row"><input type="checkbox" id="layer-reports"> Citizen reports</label>
+      </div>
+
+      <div class="panel-block">
+        <p class="panel-title">Land &amp; infrastructure</p>
+        <label class="check-row"><input type="checkbox" id="layer-landcover"> Land cover</label>
+        <label class="check-row"><input type="checkbox" id="layer-landuse"> Land use</label>
+        <label class="check-row"><input type="checkbox" id="layer-agriculture"> Agriculture mask</label>
+        <label class="check-row"><input type="checkbox" id="layer-roads"> Roads</label>
+        <label class="check-row"><input type="checkbox" id="layer-gns"> GN Division boundaries</label>
+      </div>
+
+      <div class="panel-block" id="extra-legend-block" style="display:none;">
+        <p class="panel-title">Land cover / use legend</p>
+        <div class="legend" id="extra-legend"></div>
+      </div>
+
+      <div class="panel-block">
+        <p class="panel-title">Filter</p>
+        <label class="check-row filt" data-val="Low"><input type="checkbox" class="filter-cb" value="Low" checked><i class="dot dot-low"></i> Low</label>
+        <label class="check-row filt" data-val="Moderate"><input type="checkbox" class="filter-cb" value="Moderate" checked><i class="dot dot-mod"></i> Moderate</label>
+        <label class="check-row filt" data-val="High"><input type="checkbox" class="filter-cb" value="High" checked><i class="dot dot-high"></i> High</label>
+      </div>
+
+      <div class="panel-block legend-block">
+        <p class="panel-title" id="legend-title">Legend &mdash; Urban Pressure</p>
+        <div class="legend" id="legend"></div>
+      </div>
+
+      <div class="panel-block">
+        <p class="panel-hint">Tip: click any cell to see its full profile and file a report directly against it.</p>
+      </div>
+    </aside>
+
+    <div class="map-stage">
+      <div id="leaflet-map"></div>
+      <div class="coord-readout" id="coord-readout">Lat: — · Lng: —</div>
+      <div class="map-loading" id="map-loading">
+        <div class="loader-ring"></div>
+        <p>Loading 14,293 grid cells&hellip;</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ===================== DASHBOARD ===================== -->
+<main class="page" id="page-dashboard">
+  <div class="page-head">
+    <p class="eyebrow">Planning Decision Support</p>
+    <h1>Where the pressure sits, in numbers.</h1>
+  </div>
+
+  <div class="stat-grid" id="dash-cards"></div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Pressure classes</h3>
+      <canvas id="chart-pressure"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Conversion risk</h3>
+      <canvas id="chart-risk"></canvas>
+    </div>
+    <div class="chart-card chart-wide">
+      <h3>Average land cover by pressure class</h3>
+      <canvas id="chart-cover"></canvas>
+    </div>
+  </div>
+
+  <div class="dash-footnote">
+    <p><strong>Reading the index:</strong> the Urban Pressure Index (UPI) blends built-up growth, current urban cover and road proximity for each 100&nbsp;m cell. Cells score <strong>Low</strong> below 0.20, <strong>Moderate</strong> from 0.20&ndash;0.30, and <strong>High</strong> above 0.30.</p>
+  </div>
+</main>
+
+<!-- ===================== REPORT ===================== -->
+<main class="page" id="page-report">
+  <div class="page-head">
+    <p class="eyebrow">Participatory Reporting</p>
+    <h1>Seen a paddy field disappear?</h1>
+    <p class="page-sub">Tell us where and what's changing. Reports go straight into a shared record reviewed by the planning team — the feed below shows what's been reported by everyone, not just you.</p>
+  </div>
+
+  <div class="report-shell">
+    <form class="report-form" id="report-form">
+      <div class="field-row">
+        <label>Name <span class="opt">(optional)</span>
+          <input type="text" name="name" placeholder="Your name">
+        </label>
+        <label>Email <span class="opt">(optional)</span>
+          <input type="email" name="email" placeholder="you@example.com">
+        </label>
+      </div>
+
+      <label>Grid ID <span class="opt">(optional &mdash; auto-filled from the map)</span>
+        <input type="text" name="gridId" id="report-grid-id" placeholder="e.g. 4021">
+      </label>
+
+      <label>What are you observing?
+        <select name="landUse" required>
+          <option value="" disabled selected>Select an observation type</option>
+          <option>Agricultural land being cleared</option>
+          <option>Paddy field being filled</option>
+          <option>New construction on farmland</option>
+          <option>New access road / infrastructure</option>
+          <option>Land left fallow / abandoned</option>
+          <option>Other</option>
+        </select>
+      </label>
+
+      <label>Date observed
+        <input type="date" name="date" required>
+      </label>
+
+      <label>Photo <span class="opt">(optional)</span>
+        <input type="file" name="photo" accept="image/*">
+      </label>
+
+      <label>Remarks
+        <textarea name="remarks" rows="4" placeholder="Anything else planners should know"></textarea>
+      </label>
+
+      <button type="submit" class="btn btn-primary">Submit report</button>
+      <p class="form-msg" id="report-msg"></p>
+    </form>
+
+    <div class="report-list">
+      <p class="panel-title">Recent reports (from everyone)</p>
+      <div id="reports-log" class="reports-log"></div>
+    </div>
+  </div>
+
+  <p class="privacy-note">Your name, email, and remarks are never shown publicly &mdash; only the grid ID, observation type, and date appear above and on the map.</p>
+</main>
+
+<!-- ===================== ABOUT ===================== -->
+<main class="page" id="page-about">
+  <div class="page-head">
+    <p class="eyebrow">Methodology &amp; Sources</p>
+    <h1>What's under the map.</h1>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-card">
+      <h3>Study area</h3>
+      <p>Bandaragama Divisional Secretariat Division, Kalutara District, Western Province, Sri Lanka. The area is discretised into a 100&nbsp;m analysis grid, 14,293 cells in total.</p>
+    </div>
+    <div class="about-card">
+      <h3>Data sources</h3>
+      <p>Satellite-derived land cover classification and composites processed in Google Earth Engine; road network and GN Division boundaries from OpenStreetMap and administrative boundary datasets; all scoring and grid analysis performed in QGIS.</p>
+    </div>
+    <div class="about-card">
+      <h3>Urban Pressure Index</h3>
+      <p>A composite of built-up growth rate, current urban land-cover share, and proximity to the road network, computed per cell and classified into Low / Moderate / High pressure.</p>
+    </div>
+    <div class="about-card">
+      <h3>Conversion risk</h3>
+      <p>A companion classification highlighting cells where agricultural land shows the clearest early signals of imminent conversion, independent of overall pressure class.</p>
+    </div>
+    <div class="about-card">
+      <h3>Citizen reports</h3>
+      <p>Ground-truth observations submitted through the Report page supplement the modelled layers and help planners prioritise field verification.</p>
+    </div>
+    <div class="about-card">
+      <h3>Contact</h3>
+      <p>Nilakshana Balendran<br>Department of Town and Country Planning, University of Moratuwa<br><a href="mailto:nilakshanab.23@uom.lk">nilakshanab.23@uom.lk</a></p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-title">Participatory Web Map for Monitoring Agricultural Lands and Urban Conversion Pressure &mdash; Bandaragama DSD</p>
+    <p class="footer-line">PL3508 &middot; Advanced GIS and Remote Sensing for Planning</p>
+    <p class="footer-line">Department of Town and Country Planning, University of Moratuwa</p>
+    <p class="footer-line">Nilakshana Balendran &middot; <a href="mailto:nilakshanab.23@uom.lk">nilakshanab.23@uom.lk</a></p>
+    <p class="footer-meta">&copy; 2026 &middot; Version 1.0</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/map.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/report.js"></script>
+</body>
+</html>
