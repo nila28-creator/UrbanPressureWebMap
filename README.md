@@ -7,6 +7,18 @@ produced from GEE + QGIS (`UPI`, `Pressure`, `Con_Ris`, `Ag_Vuln`, etc.).
 **Full name:** AgriShield – Bandaragama — Participatory Web GIS for Monitoring
 Agricultural Lands and Urban Conversion Pressure
 
+## Avoiding stale-cache issues after updates
+
+`index.html` loads `css/style.css` and the `js/*.js` files with a `?v=3`
+version marker. Browsers (and GitHub Pages' CDN) aggressively cache files by
+their exact URL — without this marker, visitors can end up seeing an old
+cached CSS/JS file paired with your newly-pushed HTML, causing broken-looking
+layouts right after a deploy.
+
+**Whenever you push a CSS or JS change, bump the number** (`?v=3` → `?v=4`)
+in `index.html` on all the `<link>`/`<script>` tags that changed, so browsers
+are forced to fetch the fresh version instead of reusing a cached one.
+
 ## Layout
 
 The site opens directly on the **Map** page (not Home) — since the map is the
