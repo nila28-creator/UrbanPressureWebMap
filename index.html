@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bandaragama Urban Pressure Monitor</title>
+<title>AgriShield – Bandaragama</title>
 <link rel="icon" type="image/svg+xml" href="images/logo.svg">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
@@ -17,39 +17,30 @@
 </head>
 <body>
 
-<!-- ===================== SIDEBAR RAIL ===================== -->
-<nav class="rail" aria-label="Primary">
-  <div class="rail-mark">
-    <img src="images/logo.svg" alt="" class="rail-mark-img">
+<!-- ===================== TOP NAVBAR ===================== -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <img src="images/logo.svg" alt="" class="topbar-mark-img">
+    <span class="topbar-wordmark">AgriShield &ndash; Bandaragama</span>
   </div>
-  <button class="rail-btn is-active" data-page="home" aria-current="page">
-    <span class="rail-ico">⌂</span><span class="rail-label">Home</span>
-  </button>
-  <button class="rail-btn" data-page="map">
-    <span class="rail-ico">⬡</span><span class="rail-label">Map</span>
-  </button>
-  <button class="rail-btn" data-page="dashboard">
-    <span class="rail-ico">▤</span><span class="rail-label">Dashboard</span>
-  </button>
-  <button class="rail-btn" data-page="report">
-    <span class="rail-ico">✎</span><span class="rail-label">Report</span>
-  </button>
-  <button class="rail-btn" data-page="about">
-    <span class="rail-ico">ℹ</span><span class="rail-label">About</span>
-  </button>
-  <div class="rail-foot">
-    <span class="rail-foot-dsd">Bandaragama&nbsp;DSD</span>
-  </div>
-</nav>
+  <nav class="topbar-nav" aria-label="Primary">
+    <button class="nav-btn is-active" data-page="home" aria-current="page">Home</button>
+    <button class="nav-btn" data-page="map">Map</button>
+    <button class="nav-btn" data-page="dashboard">Dashboard</button>
+    <button class="nav-btn" data-page="report">Report</button>
+    <button class="nav-btn" data-page="about">About</button>
+  </nav>
+</header>
 
 <!-- ===================== HOME ===================== -->
 <main class="page is-active" id="page-home">
   <section class="hero">
     <div class="hero-copy">
       <p class="eyebrow">Participatory Planning Support System</p>
-      <h1 class="hero-title">Bandaragama Urban<br>Pressure Monitor</h1>
+      <h1 class="hero-title">AgriShield &ndash; Bandaragama</h1>
+      <p class="hero-subtitle">Participatory Web GIS for Monitoring Agricultural Lands and Urban Conversion Pressure</p>
       <p class="hero-lede">
-        Tracking agricultural land under pressure from urban conversion across Bandaragama DSD, one 100&nbsp;m grid cell at a time.
+        Spatial evidence and participatory mapping for agricultural land under urban pressure across Bandaragama DSD.
       </p>
       <div class="hero-actions">
         <button class="btn btn-primary" data-nav="map">Open the map</button>
@@ -57,12 +48,12 @@
       </div>
       <dl class="hero-stats" id="hero-stats">
         <div class="hstat"><dt>Grid cells analysed</dt><dd id="hs-total">&mdash;</dd></div>
-        <div class="hstat"><dt>Under high pressure</dt><dd id="hs-high">&mdash;</dd></div>
+        <div class="hstat hstat-flag"><dt>Under high pressure</dt><dd id="hs-high">&mdash;</dd></div>
         <div class="hstat"><dt>Mean urban pressure index</dt><dd id="hs-upi">&mdash;</dd></div>
       </dl>
     </div>
-    <div class="hero-swatch" aria-hidden="true">
-      <div class="swatch-card">
+    <div class="hero-swatch">
+      <div class="swatch-card" aria-hidden="true">
         <p class="swatch-label">Pressure sample &mdash; live composition</p>
         <div class="swatch-grid" id="swatch-grid"></div>
         <div class="swatch-legend">
@@ -71,48 +62,63 @@
           <span><i class="dot dot-high"></i>High</span>
         </div>
       </div>
+      <div class="ticker-card">
+        <p class="swatch-label">Recent citizen reports</p>
+        <div class="ticker-list" id="hero-ticker">
+          <p class="ticker-empty">Loading&hellip;</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="info-intro">
-    <p>This web map visualises urban conversion pressure on agricultural land using spatial analysis, and lets residents report land use changes they observe directly. It's built to support evidence collection through interactive mapping and public participation — not to prescribe planning decisions.</p>
-  </section>
-
-  <section class="info-cards">
-    <div class="info-card">
-      <h3>Study area</h3>
-      <p>Bandaragama DSD, Kalutara District, Western Province — a 100&nbsp;m analysis grid across 14,293 cells.</p>
+  <section class="action-cards">
+    <div class="action-card action-card-explore">
+      <h3>Explore</h3>
+      <p>View the Urban Pressure Index, land cover, road network, and conversion risk interactively.</p>
+      <button class="action-link" data-nav="map">Open Map &rarr;</button>
     </div>
-    <div class="info-card">
-      <h3>Data sources</h3>
-      <p>Satellite land cover classification, OpenStreetMap roads, GN Division boundaries, Google Earth Engine composites.</p>
+    <div class="action-card action-card-understand">
+      <h3>Understand</h3>
+      <p>Compare agricultural areas against urban growth and identify emerging pressure hotspots.</p>
+      <button class="action-link" data-nav="dashboard">Dashboard &rarr;</button>
     </div>
-    <div class="info-card">
-      <h3>Analysis method</h3>
-      <p>A composite Urban Pressure Index from built-up growth, urban cover, and road proximity, scored per cell in QGIS.</p>
-    </div>
-    <div class="info-card">
-      <h3>Last updated</h3>
-      <p id="last-updated-text">—</p>
+    <div class="action-card action-card-participate">
+      <h3>Participate</h3>
+      <p>Report observed land-use changes anonymously to strengthen local monitoring.</p>
+      <button class="action-link" data-nav="report">Submit Report &rarr;</button>
     </div>
   </section>
 
   <section class="strip">
     <div class="strip-item">
       <span class="strip-num">01</span>
-      <h3>See the pressure</h3>
-      <p>Every cell is scored on built-up growth, agricultural cover, and road proximity to give a single Urban Pressure Index.</p>
+      <h3>Detect</h3>
+      <p>Satellite imagery identifies agricultural land, built-up areas, and road accessibility across the DSD.</p>
     </div>
     <div class="strip-item">
       <span class="strip-num">02</span>
-      <h3>Read the numbers</h3>
-      <p>A dashboard summarises how much land is agricultural, how much is converting, and where risk is concentrated.</p>
+      <h3>Analyse</h3>
+      <p>A composite Urban Pressure Index highlights the cells experiencing the most development pressure.</p>
     </div>
     <div class="strip-item">
       <span class="strip-num">03</span>
-      <h3>Tell us what you see</h3>
-      <p>Residents can flag a conversion in progress &mdash; a filled paddy, a new access road &mdash; straight from the map.</p>
+      <h3>Participate</h3>
+      <p>Residents report observed land-use changes &mdash; a filled paddy, a new access road &mdash; to support field verification.</p>
     </div>
+  </section>
+
+  <section class="layers-checklist">
+    <p class="eyebrow">Available layers</p>
+    <ul class="check-list">
+      <li>Urban Pressure Index</li>
+      <li>Conversion Risk</li>
+      <li>Land Cover</li>
+      <li>Land Use</li>
+      <li>Agriculture mask</li>
+      <li>Road Network</li>
+      <li>GN Division boundaries</li>
+      <li>Citizen Reports</li>
+    </ul>
   </section>
 
   <section class="workflow">
@@ -195,6 +201,10 @@
       <div class="panel-block">
         <p class="panel-hint">Tip: click any cell to see its full profile and file a report directly against it.</p>
       </div>
+
+      <div class="panel-block panel-about-link">
+        <button class="about-link-btn" data-nav="about">ℹ&nbsp; About this project</button>
+      </div>
     </aside>
 
     <div class="map-stage">
@@ -216,6 +226,16 @@
   </div>
 
   <div class="stat-grid" id="dash-cards"></div>
+
+  <div class="breakdown-section">
+    <p class="panel-title">Citizen reports by pressure class</p>
+    <div class="mini-stat-grid" id="reports-by-pressure"></div>
+  </div>
+
+  <div class="breakdown-section">
+    <p class="panel-title">Citizen reports by conversion risk</p>
+    <div class="mini-stat-grid" id="reports-by-risk"></div>
+  </div>
 
   <div class="chart-grid">
     <div class="chart-card">
@@ -302,31 +322,63 @@
   <div class="page-head">
     <p class="eyebrow">Methodology &amp; Sources</p>
     <h1>What's under the map.</h1>
+    <p class="page-sub">Supporting evidence-based monitoring of agricultural land conversion in Bandaragama Divisional Secretariat Division.</p>
   </div>
 
   <div class="about-grid">
     <div class="about-card">
       <h3>Study area</h3>
-      <p>Bandaragama Divisional Secretariat Division, Kalutara District, Western Province, Sri Lanka. The area is discretised into a 100&nbsp;m analysis grid, 14,293 cells in total.</p>
+      <p>Bandaragama Divisional Secretariat Division (DSD), Kalutara District, Western Province, Sri Lanka. The study area is represented using a 100&nbsp;m &times; 100&nbsp;m analysis grid consisting of 14,293 cells, providing detailed spatial monitoring of agricultural land and urban conversion pressure.</p>
     </div>
     <div class="about-card">
       <h3>Data sources</h3>
-      <p>Satellite-derived land cover classification and composites processed in Google Earth Engine; road network and GN Division boundaries from OpenStreetMap and administrative boundary datasets; all scoring and grid analysis performed in QGIS.</p>
+      <ul class="about-list">
+        <li>ESA WorldCover 2021 (land cover classification)</li>
+        <li>OpenStreetMap road network</li>
+        <li>GN Division and study area boundaries</li>
+        <li>Google Earth Engine (satellite processing)</li>
+        <li>QGIS (spatial analysis and indicator development)</li>
+      </ul>
+    </div>
+    <div class="about-card">
+      <h3>Methodology</h3>
+      <p>Urban conversion pressure was analysed using a 100&nbsp;m analysis grid. Satellite-derived land cover, urban growth, road accessibility, and agricultural vulnerability were integrated through a weighted overlay to calculate the Urban Pressure Index (UPI) for each grid cell.</p>
     </div>
     <div class="about-card">
       <h3>Urban Pressure Index</h3>
-      <p>A composite of built-up growth rate, current urban land-cover share, and proximity to the road network, computed per cell and classified into Low / Moderate / High pressure.</p>
+      <p>A weighted spatial indicator combining built-up land percentage, recent urban growth, road accessibility, and agricultural vulnerability. Each grid cell is classified into Low, Moderate, or High urban pressure to support spatial monitoring.</p>
     </div>
     <div class="about-card">
       <h3>Conversion risk</h3>
-      <p>A companion classification highlighting cells where agricultural land shows the clearest early signals of imminent conversion, independent of overall pressure class.</p>
+      <p>Identifies agricultural grid cells showing increasing exposure to urban expansion by combining agricultural land extent with surrounding urban influence. The indicator highlights locations that may need closer monitoring for possible land conversion.</p>
+    </div>
+    <div class="about-card">
+      <h3>Analysis layers</h3>
+      <ul class="about-list">
+        <li>Urban Pressure Index</li>
+        <li>Conversion Risk</li>
+        <li>Land Cover</li>
+        <li>Land Use</li>
+        <li>Agriculture mask</li>
+        <li>Road network</li>
+        <li>GN Division boundaries</li>
+        <li>Citizen Reports</li>
+      </ul>
     </div>
     <div class="about-card">
       <h3>Citizen reports</h3>
-      <p>Ground-truth observations submitted through the Report page supplement the modelled layers and help planners prioritise field verification.</p>
+      <p>Residents can anonymously report observed land-use changes, including location, observation type, and an optional photo. Community observations complement satellite-derived analysis and support field verification between data updates.</p>
     </div>
     <div class="about-card">
-      <h3>Contact</h3>
+      <h3>Data currency</h3>
+      <p>Satellite-derived indicators reflect the most recent processed imagery available at the time of analysis, last updated <strong id="data-currency-date">&mdash;</strong>. Citizen reports provide additional, more immediate observations between satellite updates to support continuous monitoring.</p>
+    </div>
+    <div class="about-card about-card-disclaimer">
+      <h3>Disclaimer</h3>
+      <p>This web map is designed as a planning support and monitoring tool. It provides spatial evidence to assist planners and stakeholders but does not generate planning recommendations or replace professional judgement.</p>
+    </div>
+    <div class="about-card">
+      <h3>Project developer</h3>
       <p>Nilakshana Balendran<br>Department of Town and Country Planning, University of Moratuwa<br><a href="mailto:nilakshanab.23@uom.lk">nilakshanab.23@uom.lk</a></p>
     </div>
   </div>
@@ -334,7 +386,7 @@
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <p class="footer-title">Participatory Web Map for Monitoring Agricultural Lands and Urban Conversion Pressure &mdash; Bandaragama DSD</p>
+    <p class="footer-title">AgriShield &ndash; Bandaragama &mdash; Participatory Web GIS for Monitoring Agricultural Lands and Urban Conversion Pressure</p>
     <p class="footer-line">PL3508 &middot; Advanced GIS and Remote Sensing for Planning</p>
     <p class="footer-line">Department of Town and Country Planning, University of Moratuwa</p>
     <p class="footer-line">Nilakshana Balendran &middot; <a href="mailto:nilakshanab.23@uom.lk">nilakshanab.23@uom.lk</a></p>
@@ -346,8 +398,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="js/config.js"></script>
-<script src="js/nav.js"></script>
 <script src="js/map.js"></script>
+<script src="js/nav.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/report.js"></script>
 </body>

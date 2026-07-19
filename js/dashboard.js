@@ -28,19 +28,20 @@
     const cards = [
       { n: total.toLocaleString(), l: "Grid cells analysed" },
       { n: agCells.toLocaleString(), l: "Predominantly agricultural cells (≥50%)" },
-      { n: counts.High.toLocaleString(), l: "High urban pressure cells" },
+      { n: counts.High.toLocaleString(), l: "High urban pressure cells", flag: true },
       { n: flagged.toLocaleString(), l: "Cells flagged for conversion risk" },
       { n: meanUpi.toFixed(2), l: "Mean urban pressure index" },
       { n: pct(counts.Moderate, total), l: "Share under moderate pressure" },
       { n: "…", l: "Citizen reports received", id: "reports-count-card" }
     ];
     document.getElementById("dash-cards").innerHTML = cards.map(c =>
-      `<div class="stat-card"><div class="n" ${c.id ? `id="${c.id}"` : ""}>${c.n}</div><div class="l">${c.l}</div></div>`
+      `<div class="stat-card${c.flag ? " stat-card-flag" : ""}"><div class="n" ${c.id ? `id="${c.id}"` : ""}>${c.n}</div><div class="l">${c.l}</div></div>`
     ).join("");
 
     fetchLiveReports().then(reports => {
       const el = document.getElementById("reports-count-card");
       if (el) el.textContent = reports.length.toLocaleString();
+      renderReportBreakdown(reports, feats);
     });
 
     new Chart(document.getElementById("chart-pressure"), {
@@ -90,6 +91,37 @@
         plugins: { legend: { position: "bottom", labels: { font: { family: "Work Sans" } } } }
       }
     });
+  }
+
+  function renderReportBreakdown(reports, feats){
+    // Grid_ID -> {Pressure, Con_Ris}, so we can look up which class each
+    // reported cell actually falls under.
+    const gridLookup = new Map();
+    feats.forEach(p => gridLookup.set(String(p.Grid_ID), p));
+
+    const byPressure = { Low: 0, Moderate: 0, High: 0 };
+    const byRisk = { None: 0, Low: 0, Moderate: 0, High: 0 };
+    let unmatched = 0;
+
+    reports.forEach(r => {
+      const cell = gridLookup.get(String(r.gridId));
+      if (!cell){ unmatched++; return; }
+      if (byPressure[cell.Pressure] !== undefined) byPressure[cell.Pressure]++;
+      const risk = cell.Con_Ris || "None";
+      if (byRisk[risk] !== undefined) byRisk[risk]++;
+    });
+
+    const pressureHtml = CONFIG.pressureOrder.map(cls =>
+      `<div class="mini-stat-card"><strong>${byPressure[cls]}</strong> report${byPressure[cls] === 1 ? "" : "s"} in <strong>${cls}</strong>-pressure cells</div>`
+    ).join("");
+    document.getElementById("reports-by-pressure").innerHTML = pressureHtml ||
+      `<p class="reports-empty">No reports yet.</p>`;
+
+    const riskHtml = CONFIG.riskOrder.map(cls =>
+      `<div class="mini-stat-card"><strong>${byRisk[cls]}</strong> report${byRisk[cls] === 1 ? "" : "s"} in <strong>${cls}</strong>-risk cells</div>`
+    ).join("");
+    document.getElementById("reports-by-risk").innerHTML = riskHtml ||
+      `<p class="reports-empty">No reports yet.</p>`;
   }
 
   function pct(n, total){ return Math.round((n / total) * 100) + "%"; }

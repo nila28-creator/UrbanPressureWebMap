@@ -1,8 +1,27 @@
-# Bandaragama Urban Pressure Monitor
+# AgriShield – Bandaragama
 
 A participatory Planning Support System for monitoring agricultural land and
 urban conversion pressure in Bandaragama DSD, built on the 100 m grid you
 produced from GEE + QGIS (`UPI`, `Pressure`, `Con_Ris`, `Ag_Vuln`, etc.).
+
+**Full name:** AgriShield – Bandaragama — Participatory Web GIS for Monitoring
+Agricultural Lands and Urban Conversion Pressure
+
+## Layout
+
+The site opens directly on the **Map** page (not Home) — since the map is the
+primary artifact, it loads immediately rather than requiring a click through
+a landing page. Navigation is a top bar (logo + wordmark on the left, page
+links on the right), replacing the earlier left sidebar. An "About this
+project" link sits in the bottom corner of the map's left panel for anyone
+who wants the fuller context (methodology, data sources) without it blocking
+the map on arrival.
+
+## Fonts
+
+Manrope (headings) + Inter (body) + IBM Plex Mono (data/stats), loaded from
+Google Fonts. Update the `--font-display` / `--font-body` variables at the
+top of `css/style.css` to change these.
 
 ## Layers
 
@@ -102,6 +121,14 @@ country). A temporary marker drops at the matched location — from there,
 just click nearby cells to see their data. No API key or account needed,
 but Nominatim is rate-limited to about 1 request/second, which is well
 within what this app needs.
+
+## Dashboard report breakdown
+
+Alongside the summary stats and charts, the Dashboard cross-references live
+citizen reports against the grid cell they were filed against, showing counts
+like "3 reports in High-pressure cells" and "1 report in Moderate-risk cells"
+— a quick way to see whether citizen observations line up with, or diverge
+from, the modelled pressure/risk classification.
 
 ## Deploying
 

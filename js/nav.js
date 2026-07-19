@@ -2,24 +2,25 @@
    Navigation between pages + Home page hero content
    ========================================================== */
 (function(){
-  const railBtns = document.querySelectorAll(".rail-btn");
+  const navBtns = document.querySelectorAll(".nav-btn");
   const pages = document.querySelectorAll(".page");
 
   function goTo(pageId){
     pages.forEach(p => p.classList.toggle("is-active", p.id === "page-" + pageId));
-    railBtns.forEach(b => b.classList.toggle("is-active", b.dataset.page === pageId));
+    navBtns.forEach(b => b.classList.toggle("is-active", b.dataset.page === pageId));
     if (pageId === "map" && window.initMapOnce) window.initMapOnce();
     if (pageId === "dashboard" && window.initDashboardOnce) window.initDashboardOnce();
   }
 
-  railBtns.forEach(b => b.addEventListener("click", () => goTo(b.dataset.page)));
+  navBtns.forEach(b => b.addEventListener("click", () => goTo(b.dataset.page)));
   document.querySelectorAll("[data-nav]").forEach(b =>
     b.addEventListener("click", () => goTo(b.dataset.nav))
   );
 
   window.appGoTo = goTo;
-  document.getElementById("last-updated-text").textContent = CONFIG.lastUpdated;
+  document.getElementById("data-currency-date").textContent = CONFIG.lastUpdated;
   loadGridData();
+  fetchLiveReports().then(reports => buildTicker(reports.slice().reverse()));
 
   STORE.onReady(data => {
     const feats = data.features;
@@ -63,5 +64,18 @@
       grid.appendChild(d);
       requestAnimationFrame(() => { d.style.opacity = "1"; });
     });
+  }
+  function buildTicker(reports){
+    const el = document.getElementById("hero-ticker");
+    const recent = reports.slice(0, 3);
+    if (!recent.length){
+      el.innerHTML = `<p class="ticker-empty">No reports yet &mdash; be the first to flag something.</p>`;
+      return;
+    }
+    el.innerHTML = recent.map(r => `
+      <div class="ticker-item">
+        <p class="ti-type">${r.landUse || "Observation"}</p>
+        <p class="ti-meta">Grid ${r.gridId || "—"} &middot; ${r.date || "no date"}</p>
+      </div>`).join("");
   }
 })();
