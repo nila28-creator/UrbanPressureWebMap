@@ -126,6 +126,8 @@
       if (!e.target.closest(".search-row")) hideSuggestions();
     });
 
+    document.getElementById("locate-btn").addEventListener("click", locateUser);
+
     buildLegend();
     STORE.onReady(renderGrid);
     loadGnIndex(); // small file, load early so search + autocomplete work immediately
@@ -196,6 +198,7 @@
         idIndex.set(String(p.Grid_ID), layer);
         layer.bindPopup(() => popupHtml(p), { maxWidth: 260 });
         layer.on("popupopen", (e) => {
+          updateUrlForGrid(p.Grid_ID);
           const el = e.popup.getElement().querySelector(".report-link");
           if (el) el.addEventListener("click", (ev) => {
             ev.preventDefault();
@@ -208,6 +211,68 @@
 
     document.getElementById("map-loading").style.opacity = "0";
     setTimeout(() => { document.getElementById("map-loading").style.display = "none"; }, 300);
+
+    openGridFromUrl();
+  }
+
+  /* ---------------------------------------------------------
+     Shareable cell links: ?grid=<id> in the URL opens straight
+     to that cell. Every popup open (click, search, locate) also
+     writes the current cell into the URL so the address bar is
+     always a valid link to what's on screen.
+     --------------------------------------------------------- */
+  function updateUrlForGrid(gridId){
+    const url = new URL(window.location);
+    url.searchParams.set("grid", gridId);
+    window.history.replaceState({}, "", url);
+  }
+
+  function openGridFromUrl(){
+    const gridId = new URLSearchParams(window.location.search).get("grid");
+    if (!gridId) return;
+    const layer = idIndex.get(gridId);
+    if (!layer) return;
+    map.fitBounds(layer.getBounds(), { maxZoom: 17 });
+    layer.openPopup();
+  }
+
+  /* ---------------------------------------------------------
+     Find my location — geolocates the visitor and opens
+     whichever grid cell they're standing in.
+     --------------------------------------------------------- */
+  function locateUser(){
+    const msg = document.getElementById("search-msg");
+    if (!navigator.geolocation){
+      msg.textContent = "Geolocation isn't supported by this browser.";
+      return;
+    }
+    msg.textContent = "Locating…";
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+        const cell = findCellAt(latlng);
+        if (!cell){
+          msg.textContent = "You're outside the Bandaragama study area.";
+          clearSearchMarker();
+          map.setView(latlng, 15);
+          dropSearchMarker(pos.coords.latitude, pos.coords.longitude, "Your location");
+          return;
+        }
+        msg.textContent = "";
+        clearSearchMarker();
+        map.fitBounds(cell.layer.getBounds(), { maxZoom: 17 });
+        cell.layer.openPopup();
+      },
+      () => { msg.textContent = "Couldn't get your location — check permissions and try again."; },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+
+  function findCellAt(latlng){
+    for (const [gridId, layer] of idIndex.entries()){
+      if (layer.getBounds().contains(latlng)) return { gridId, layer };
+    }
+    return null;
   }
 
   function buildLegend(){

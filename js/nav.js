@@ -22,6 +22,10 @@
   loadGridData();
   fetchLiveReports().then(reports => buildTicker(reports.slice().reverse()));
 
+  // A shared cell link (?grid=<id>) should open straight to the Map page
+  // and that cell, rather than landing on Home first.
+  if (new URLSearchParams(window.location.search).get("grid")) goTo("map");
+
   STORE.onReady(data => {
     const feats = data.features;
     const total = feats.length;

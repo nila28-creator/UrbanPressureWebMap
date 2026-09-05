@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
-<link rel="stylesheet" href="css/style.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=7">
 </head>
 <body>
 
@@ -34,39 +34,40 @@
 
 <!-- ===================== HOME ===================== -->
 <main class="page is-active" id="page-home">
-  <section class="hero">
-    <div class="hero-copy">
-      <p class="eyebrow">Participatory Planning Support System</p>
+  <section class="hero-banner">
+    <div class="hero-banner-inner">
+      <p class="eyebrow eyebrow-on-dark">Participatory Planning Support System</p>
       <h1 class="hero-title">AgriShield &ndash; Bandaragama</h1>
-      <p class="hero-subtitle">Participatory Web GIS for Monitoring Agricultural Lands and Urban Conversion Pressure</p>
-      <p class="hero-lede">
-        Spatial evidence and participatory mapping for agricultural land under urban pressure across Bandaragama DSD.
-      </p>
+      <p class="hero-subtitle hero-subtitle-on-dark">Participatory Web GIS for Monitoring Agricultural Lands and Urban Conversion Pressure</p>
       <div class="hero-actions">
         <button class="btn btn-primary" data-nav="map">Open the map</button>
-        <button class="btn btn-ghost" data-nav="report">Report a change</button>
+        <button class="btn btn-ghost btn-ghost-on-dark" data-nav="report">Report a change</button>
       </div>
-      <dl class="hero-stats" id="hero-stats">
-        <div class="hstat"><dt>Grid cells analysed</dt><dd id="hs-total">&mdash;</dd></div>
-        <div class="hstat hstat-flag"><dt>Under high pressure</dt><dd id="hs-high">&mdash;</dd></div>
-        <div class="hstat"><dt>Mean urban pressure index</dt><dd id="hs-upi">&mdash;</dd></div>
-      </dl>
     </div>
-    <div class="hero-swatch">
-      <div class="swatch-card" aria-hidden="true">
-        <p class="swatch-label">Pressure sample &mdash; live composition</p>
-        <div class="swatch-grid" id="swatch-grid"></div>
-        <div class="swatch-legend">
-          <span><i class="dot dot-low"></i>Low</span>
-          <span><i class="dot dot-mod"></i>Moderate</span>
-          <span><i class="dot dot-high"></i>High</span>
-        </div>
+  </section>
+
+  <section class="hero-stats-strip">
+    <dl class="hero-stats" id="hero-stats">
+      <div class="hstat"><dt>Grid cells analysed</dt><dd id="hs-total">&mdash;</dd></div>
+      <div class="hstat hstat-flag"><dt>Under high pressure</dt><dd id="hs-high">&mdash;</dd></div>
+      <div class="hstat"><dt>Mean urban pressure index</dt><dd id="hs-upi">&mdash;</dd></div>
+    </dl>
+  </section>
+
+  <section class="hero-snapshot">
+    <div class="swatch-card" aria-hidden="true">
+      <p class="swatch-label">Pressure sample &mdash; live composition</p>
+      <div class="swatch-grid" id="swatch-grid"></div>
+      <div class="swatch-legend">
+        <span><i class="dot dot-low"></i>Low</span>
+        <span><i class="dot dot-mod"></i>Moderate</span>
+        <span><i class="dot dot-high"></i>High</span>
       </div>
-      <div class="ticker-card">
-        <p class="swatch-label">Recent citizen reports</p>
-        <div class="ticker-list" id="hero-ticker">
-          <p class="ticker-empty">Loading&hellip;</p>
-        </div>
+    </div>
+    <div class="ticker-card">
+      <p class="swatch-label">Recent citizen reports</p>
+      <div class="ticker-list" id="hero-ticker">
+        <p class="ticker-empty">Loading&hellip;</p>
       </div>
     </div>
   </section>
@@ -148,6 +149,7 @@
         </div>
         <p class="search-msg" id="search-msg"></p>
         <p class="panel-hint">Know the Grid ID? Type it directly. Otherwise, start typing a GN Division name for suggestions, or a landmark/road name.</p>
+        <button id="locate-btn" class="btn btn-ghost btn-sm btn-full">Find my location</button>
       </div>
 
       <div class="panel-block">
@@ -225,35 +227,73 @@
     <h1>Where the pressure sits, in numbers.</h1>
   </div>
 
-  <div class="stat-grid" id="dash-cards"></div>
-
-  <div class="breakdown-section">
-    <p class="panel-title">Citizen reports by pressure class</p>
-    <div class="mini-stat-grid" id="reports-by-pressure"></div>
-  </div>
-
-  <div class="breakdown-section">
-    <p class="panel-title">Citizen reports by conversion risk</p>
-    <div class="mini-stat-grid" id="reports-by-risk"></div>
-  </div>
-
-  <div class="chart-grid">
-    <div class="chart-card">
-      <h3>Pressure classes</h3>
-      <canvas id="chart-pressure"></canvas>
-    </div>
-    <div class="chart-card">
-      <h3>Conversion risk</h3>
-      <canvas id="chart-risk"></canvas>
-    </div>
-    <div class="chart-card chart-wide">
-      <h3>Average land cover by pressure class</h3>
-      <canvas id="chart-cover"></canvas>
+  <div class="dash-section">
+    <div class="stat-grid" id="dash-cards"></div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Pressure classes</h3>
+        <canvas id="chart-pressure"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Conversion risk</h3>
+        <canvas id="chart-risk"></canvas>
+      </div>
     </div>
   </div>
 
-  <div class="dash-footnote">
-    <p><strong>Reading the index:</strong> the Urban Pressure Index (UPI) blends built-up growth, current urban cover and road proximity for each 100&nbsp;m cell. Cells score <strong>Low</strong> below 0.20, <strong>Moderate</strong> from 0.20&ndash;0.30, and <strong>High</strong> above 0.30.</p>
+  <div class="dash-section">
+    <div class="dash-section-head">
+      <h2>Land &amp; Pressure Detail</h2>
+      <div class="dash-section-chips" id="dash-chips"></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card chart-wide">
+        <h3>Land cover share by pressure class</h3>
+        <canvas id="chart-cover"></canvas>
+      </div>
+      <div class="chart-card chart-wide">
+        <h3>Major crop distribution (by mapped area)</h3>
+        <canvas id="chart-crops"></canvas>
+      </div>
+      <div class="chart-card chart-wide">
+        <h3>Urban Pressure Index vs. Agricultural Vulnerability</h3>
+        <canvas id="chart-scatter"></canvas>
+      </div>
+    </div>
+    <div class="dash-footnote">
+      <p><strong>Reading the index:</strong> the Urban Pressure Index (UPI) blends built-up growth, current urban cover and road proximity for each 100&nbsp;m cell. Cells score <strong>Low</strong> below 0.20, <strong>Moderate</strong> from 0.20&ndash;0.30, and <strong>High</strong> above 0.30.</p>
+    </div>
+  </div>
+
+  <div class="dash-section">
+    <div class="dash-section-head">
+      <h2>Citizen Reports</h2>
+    </div>
+    <div class="report-breakdown-row">
+      <div class="report-breakdown-col">
+        <p class="panel-title">By pressure class</p>
+        <div class="mini-stat-grid mini-stat-grid-compact" id="reports-by-pressure"></div>
+      </div>
+      <div class="report-breakdown-col">
+        <p class="panel-title">By conversion risk</p>
+        <div class="mini-stat-grid mini-stat-grid-compact" id="reports-by-risk"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-section dash-section-population">
+    <div class="dash-section-head">
+      <h2>Population Context</h2>
+      <p class="page-sub">Bandaragama DSD's official population figures &mdash; a separate DSD-level dataset, not derived from the 100&nbsp;m pressure grid above.</p>
+    </div>
+    <div class="population-layout">
+      <div class="stat-grid stat-grid-2col" id="population-cards"></div>
+      <div class="chart-card">
+        <h3>Population growth, 2001&ndash;2050</h3>
+        <canvas id="chart-population"></canvas>
+        <p class="chart-note">Solid line: census figures (2001&ndash;2024). Dashed: projections (2030, 2050).</p>
+      </div>
+    </div>
   </div>
 </main>
 
@@ -397,10 +437,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="js/config.js?v=3"></script>
-<script src="js/map.js?v=3"></script>
-<script src="js/nav.js?v=3"></script>
-<script src="js/dashboard.js?v=3"></script>
-<script src="js/report.js?v=3"></script>
+<script src="js/config.js?v=7"></script>
+<script src="js/map.js?v=7"></script>
+<script src="js/nav.js?v=7"></script>
+<script src="js/dashboard.js?v=7"></script>
+<script src="js/report.js?v=7"></script>
 </body>
 </html>

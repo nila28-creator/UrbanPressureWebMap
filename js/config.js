@@ -60,7 +60,25 @@ const CONFIG = {
     mid:   { color: "#C08A28", weight: 1.6, classes: ["secondary", "tertiary"] },
     local: { color: "#8B8F7A", weight: 1,   classes: ["residential", "living_street", "unclassified", "service"] },
     minor: { color: "#B4B2A9", weight: 0.6, classes: ["track", "footway", "path", "steps", "track_grade3", "track_grade4", "track_grade5"] }
-  }
+  },
+
+  // Bandaragama DSD population figures, from a DSD-level population dataset
+  // (a different, non-grid data source — kept separate from the 100 m
+  // pressure grid analysis throughout). Official DSD area used here
+  // (57.08 sq km) rather than the grid's padded bounding-box extent.
+  population: {
+    areaSqKm: 57.08,
+    years: [2001, 2012, 2024, 2030, 2050],
+    projectedFrom: 2024, // years after this are projections, not census counts
+    values: [86886, 109236, 124133, 131828, 161102],
+    growthPA: 1.008,
+    density2024: 2174.9
+  },
+
+  // Land use subtypes counted as "crops" for the distribution chart —
+  // excludes mixed-use (Homesteads/Garden) and non-agricultural classes
+  // (water, rock, quarry, scrub, barren, playground).
+  cropTypes: ["Paddy", "Rubber", "Coconut", "Oil Palm", "Cinnamon", "Other cultivation", "Sparsely used cropland"]
 };
 
 // Shared in-memory store so map.js / dashboard.js / report.js don't

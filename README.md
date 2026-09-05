@@ -35,6 +35,23 @@ Manrope (headings) + Inter (body) + IBM Plex Mono (data/stats), loaded from
 Google Fonts. Update the `--font-display` / `--font-body` variables at the
 top of `css/style.css` to change these.
 
+## Find my location
+
+The "Find my location" button (Map page, left panel) uses the browser's
+Geolocation API to find which grid cell the visitor is physically standing
+in, and opens straight to it. If they're outside the Bandaragama study
+area, it drops a marker at their position instead of failing silently.
+Requires the visitor to grant location permission — handled gracefully if
+denied or unsupported.
+
+## Shareable cell links
+
+Opening any grid cell (by click, search, or "Find my location") updates the
+URL to `?grid=<id>` without reloading the page — so the address bar is
+always a valid link to whatever's currently open. Visiting a link with that
+parameter (e.g. sharing it with a planner or resident) jumps straight to
+the Map page and that cell, bypassing the Home landing page.
+
 ## Layers
 
 Beyond the pressure grid, the Map page includes:
@@ -141,6 +158,30 @@ citizen reports against the grid cell they were filed against, showing counts
 like "3 reports in High-pressure cells" and "1 report in Moderate-risk cells"
 — a quick way to see whether citizen observations line up with, or diverge
 from, the modelled pressure/risk classification.
+
+## Additional Dashboard charts
+
+- **Land cover share by pressure class** — 100%-stacked bar (Agricultural /
+  Built-up / Urban growth %), replacing the earlier grouped-bar version.
+- **Major crop distribution** — horizontal bar, area-weighted (not just
+  feature count), computed from the Land Use layer's detailed subtypes
+  (`landuse__1`), restricted to `CONFIG.cropTypes` (Paddy, Rubber, Coconut,
+  Oil Palm, Cinnamon, Other cultivation, Sparsely used cropland). Area is
+  computed with a simple planar shoelace formula on raw lon/lat coordinates
+  — fine for relative comparison across a study area this small (~15 km
+  across), not survey-grade.
+- **UPI vs. Agricultural Vulnerability scatter** — every 7th grid cell
+  (~2,000 points) for rendering performance, colored by pressure class.
+- **Population context** (own section, clearly separated) — Bandaragama
+  DSD's official population figures (2001–2050) from `CONFIG.population`
+  in `config.js`, a *different, non-grid data source* kept deliberately
+  distinct from the 100 m pressure grid analysis. Update the values there
+  if you get a newer population dataset.
+
+All chart-building code in `dashboard.js` is wrapped in `try/catch` per
+section, so if Chart.js fails to load (network issue, ad blocker, etc.) one
+broken chart won't prevent the rest of the Dashboard's stat cards and other
+charts from rendering.
 
 ## Deploying
 
